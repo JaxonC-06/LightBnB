@@ -1,5 +1,3 @@
-const properties = require("./json/properties.json");
-const users = require("./json/users.json");
 const { Pool } = require("pg");
 
 const pool = new Pool({
@@ -24,7 +22,7 @@ const getUserWithEmail = function (email) {
     })
     .catch(err => {
       return null;
-    })
+    });
 };
 
 /**
@@ -41,7 +39,7 @@ const getUserWithId = function (id) {
     .catch(err => {
       console.log(err);
       return null;
-    })
+    });
 };
 
 /**
@@ -51,14 +49,14 @@ const getUserWithId = function (id) {
  */
 const addUser = function (user) {
   return pool
-    .query('INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *', 
+    .query('INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *',
       [user.name, user.email, user.password])
     .then((result) => {
       return result.rows[0];
     })
     .catch(err => {
       console.log(err.message);
-    })
+    });
 };
 
 /// Reservations
@@ -85,7 +83,7 @@ const getAllReservations = function (guest_id, limit = 10) {
     })
     .catch(err => {
       console.log(err);
-    })
+    });
 };
 
 /// Properties
@@ -125,7 +123,7 @@ const getAllProperties = (options, limit = 10) => {
     queryString += `AND cost_per_night BETWEEN $${queryParams.length - 1} AND $${queryParams.length}`;
   }
 
-  queryString += `GROUP BY properties.id `
+  queryString += `GROUP BY properties.id `;
 
   // minimum rating
   if (options.minimum_rating) {
@@ -164,9 +162,9 @@ const addProperty = function (property) {
   RETURNING *;
   `;
 
-  const queryParams = [`${property.owner_id}`, `${property.title}`, `${property.description}`, 
+  const queryParams = [`${property.owner_id}`, `${property.title}`, `${property.description}`,
     `${property.thumbnail_photo_url}`, `${property.cover_photo_url}`, `${property.cost_per_night}`,
-    `${property.street}`, `${property.city}`, `${property.province}`, `${property.post_code}`, 
+    `${property.street}`, `${property.city}`, `${property.province}`, `${property.post_code}`,
     `${property.country}`, `${property.parking_spaces}`, `${property.number_of_bathrooms}`, `${property.number_of_bedrooms}`
   ];
 
